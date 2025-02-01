@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { color } from "three/tsl"
+import gsap from 'gsap'
 
 //Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -47,3 +47,21 @@ const renderer = new THREE.WebGLRenderer({
 
 renderer.setSize(sizes.width, sizes.height)
 renderer.render(scene, camera)
+
+
+//Clock
+// const clock = new THREE.Clock()
+gsap.to(cube1.position, { duration:7, delay:1, x: 3})
+//Animations
+function aaa(){
+
+    // //Clock
+    // const tempsPasse = clock.getElapsedTime()
+    // console.log(tempsPasse)
+
+    // cube1.rotation.y = tempsPasse
+    renderer.render(scene, camera)
+    window.requestAnimationFrame(aaa)
+}
+
+aaa()

@@ -1,4 +1,5 @@
 import * as THREE from "three"
+import { color } from "three/tsl"
 
 //Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -7,22 +8,38 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 //Object
-const geometry = new THREE.BoxGeometry(1, 1, 1)
-const material = new THREE.MeshBasicMaterial({ color: "red",wireframe:true })
-const mesh = new THREE.Mesh(geometry, material)
-scene.add(mesh)
-mesh.position.set(0,1,0)
+const groupe = new THREE.Group()
+scene.add(groupe)
+
+const cube1 = new THREE.Mesh(
+    new THREE.BoxGeometry(1,1,1),
+    new THREE.MeshBasicMaterial({color: "red"}) 
+)
+groupe.add(cube1)
+cube1.position.set(-3,0,0)
+
+const cube2 = new THREE.Mesh(
+    new THREE.BoxGeometry(1,1,1),
+    new THREE.MeshBasicMaterial({color: "green"}) 
+)
+groupe.add(cube2)
+cube2.position.set(0,0,0)
+
+const cube3 = new THREE.Mesh(
+    new THREE.BoxGeometry(1,1,1),
+    new THREE.MeshBasicMaterial({color: "blue"}) 
+)
+groupe.add(cube3)
+cube3.position.set(3,0,0)
 
 //Scale
 
-
-console.log("Position par rapport au centre:",mesh.position.length())
 
 //Axes helper
 
 const axesHelper = new THREE.AxesHelper(1)
 scene.add(axesHelper)
-axesHelper.position.set(1,1,1)
+axesHelper.position.set(0,0,0)
 
 // Sizes
 const sizes ={
@@ -35,7 +52,8 @@ const sizes ={
 const camera = new THREE.PerspectiveCamera(75,sizes.width/sizes.height)
 scene.add(camera)
 camera.position.z = 4
-console.log("Distance de la caméra:",mesh.position.distanceTo(camera.position))
+
+//Log
 
 // Renderer 
 const renderer = new THREE.WebGLRenderer({

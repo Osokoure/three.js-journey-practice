@@ -1,6 +1,20 @@
 import * as THREE from "three"
 import gsap from 'gsap'
 
+//Curseur
+
+const cursor=
+{
+    x:0,
+    y:0
+}
+window.addEventListener("mousemove", (event) => 
+    {
+        cursor.x = event.clientX / sizes.width -0.5
+        cursor.y = -(event.clientY / sizes.height -0.5)
+        console.log("X:",cursor.x)
+        console.log("Y:",cursor.y)
+    })
 //Canvas
 const canvas = document.querySelector('canvas.webgl')
 
@@ -33,9 +47,16 @@ const sizes ={
 
 //Camera
 
-const camera = new THREE.PerspectiveCamera(75,sizes.width/sizes.height)
+const camera = new THREE.PerspectiveCamera(75,sizes.width/sizes.height,0.1,100)
+// const aspectRatio = sizes.width/sizes.height
+// const camera = new THREE.OrthographicCamera(-1 * aspectRatio,
+//     1*aspectRatio,
+//     1,-1,
+//     0.1,100)
+
+camera.position.z=3
+
 scene.add(camera)
-camera.position.z = 4
 
 //Log
 
@@ -50,14 +71,22 @@ renderer.render(scene, camera)
 
 
 //Clock
-// const clock = new THREE.Clock()
-gsap.to(cube1.position, { duration:7, delay:1, x: 3})
+const clock = new THREE.Clock()
+
+//GreenSocks
+// gsap.to(cube1.rotation, {duration:1,delay:1, y: 3})
+
 //Animations
 function aaa(){
 
-    // //Clock
-    // const tempsPasse = clock.getElapsedTime()
-    // console.log(tempsPasse)
+    //Clock
+    const tempsPasse = clock.getElapsedTime()
+    //console.log(tempsPasse)
+
+    camera.position.x= Math.sin(cursor.x * Math.PI*2) *2
+    camera.position.z= Math.cos(cursor.x * Math.PI*2) *2
+    camera.position.y = cursor.y *5
+    camera.lookAt(cube1.position)
 
     // cube1.rotation.y = tempsPasse
     renderer.render(scene, camera)

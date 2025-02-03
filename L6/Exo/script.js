@@ -1,5 +1,6 @@
 import * as THREE from "three"
 import gsap from 'gsap'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 //Curseur
 
@@ -57,9 +58,10 @@ const camera = new THREE.PerspectiveCamera(75,sizes.width/sizes.height,0.1,100)
 camera.position.z=3
 
 scene.add(camera)
-
-//Log
-
+//controls
+const controls = new OrbitControls(camera,canvas)
+controls.enableDamping=true
+controls.target=cube1.position
 // Renderer 
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
@@ -80,15 +82,19 @@ const clock = new THREE.Clock()
 function aaa(){
 
     //Clock
-    const tempsPasse = clock.getElapsedTime()
+    // const tempsPasse = clock.getElapsedTime()
     //console.log(tempsPasse)
-
-    camera.position.x= Math.sin(cursor.x * Math.PI*2) *2
-    camera.position.z= Math.cos(cursor.x * Math.PI*2) *2
-    camera.position.y = cursor.y *5
-    camera.lookAt(cube1.position)
-
     // cube1.rotation.y = tempsPasse
+
+    // camera.position.x= Math.sin(cursor.x * Math.PI*2) *2
+    // camera.position.z= Math.cos(cursor.x * Math.PI*2) *2
+    // camera.position.y = cursor.y *5
+    // camera.lookAt(cube1.position)
+
+
+    //Update controls
+    controls.update()
+    
     renderer.render(scene, camera)
     window.requestAnimationFrame(aaa)
 }

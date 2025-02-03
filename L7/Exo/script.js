@@ -41,10 +41,52 @@ scene.add(axesHelper)
 axesHelper.position.set(3,2,0)
 
 // Sizes
-const sizes ={
-    width: 800,
-    height: 600
+const sizes = {
+    width: window.innerWidth,
+    height: window.innerHeight
 }
+
+window.addEventListener('resize', () =>
+    {
+        // Update sizes
+        sizes.width = window.innerWidth
+        sizes.height = window.innerHeight
+    
+        // Update camera
+        camera.aspect = sizes.width / sizes.height
+    
+        // Update renderer
+        renderer.setSize(sizes.width, sizes.height)
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    })
+
+    window.addEventListener('dblclick', () =>
+        {
+            const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
+        
+            if(!fullscreenElement)
+            {
+                if(canvas.requestFullscreen)
+                {
+                    canvas.requestFullscreen()
+                }
+                else if(canvas.webkitRequestFullscreen)
+                {
+                    canvas.webkitRequestFullscreen()
+                }
+            }
+            else
+            {
+                if(document.exitFullscreen)
+                {
+                    document.exitFullscreen()
+                }
+                else if(document.webkitExitFullscreen)
+                {
+                    document.webkitExitFullscreen()
+                }
+            }
+        })
 
 //Camera
 
@@ -61,7 +103,6 @@ scene.add(camera)
 //controls
 const controls = new OrbitControls(camera,canvas)
 controls.enableDamping=true
-controls.target=cube1.position
 // Renderer 
 const renderer = new THREE.WebGLRenderer({
     canvas: canvas
@@ -69,6 +110,7 @@ const renderer = new THREE.WebGLRenderer({
 })
 
 renderer.setSize(sizes.width, sizes.height)
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 renderer.render(scene, camera)
 
 
@@ -94,6 +136,7 @@ function aaa(){
 
     //Update controls
     controls.update()
+    
     
     renderer.render(scene, camera)
     window.requestAnimationFrame(aaa)

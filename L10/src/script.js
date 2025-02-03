@@ -15,6 +15,33 @@ debugObject.spin = () =>
     {
         gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 })
     }
+debugObject.PleinEcran =()=>
+    {
+                const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
+            
+                if(!fullscreenElement)
+                {
+                    if(canvas.requestFullscreen)
+                    {
+                        canvas.requestFullscreen()
+                    }
+                    else if(canvas.webkitRequestFullscreen)
+                    {
+                        canvas.webkitRequestFullscreen()
+                    }
+                }
+                else
+                {
+                    if(document.exitFullscreen)
+                    {
+                        document.exitFullscreen()
+                    }
+                    else if(document.webkitExitFullscreen)
+                    {
+                        document.webkitExitFullscreen()
+                    }
+                }
+            }
 debugObject.subdivision = 2
 /**
  * Base
@@ -25,11 +52,43 @@ const canvas = document.querySelector('canvas.webgl')
 // Scene
 const scene = new THREE.Scene()
 
+//Texture 
+const loadingManager = new THREE.LoadingManager()
+loadingManager.onStart = () =>
+    {
+        console.log('Début du chargement')
+    }
+    loadingManager.onLoad = () =>
+    {
+        console.log('Chargement fini')
+    }
+    loadingManager.onProgress = () =>
+    {
+        console.log('Chargement en cours')
+    }
+    loadingManager.onError = () =>
+    {
+        console.log('Erreur de chargement')
+    }
+const textureLoader = new THREE.TextureLoader(loadingManager)
+const colorTexture = textureLoader.load('/textures/door/color.jpg')
+colorTexture.colorSpace = THREE.SRGBColorSpace
+colorTexture.wrapS = THREE.RepeatWrapping
+colorTexture.wrapT = THREE.RepeatWrappin
+colorTexture.repeat.x = 3
+colorTexture.repeat.y = 3
+const alphaTexture = textureLoader.load('/textures/door/alpha.jpg')
+const heightTexture = textureLoader.load('/textures/door/height.jpg')
+const normalTexture = textureLoader.load('/textures/door/normal.jpg')
+const ambientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
+const metalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
+const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
+
 /**
  * Object
  */
 const geometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2)
-const material = new THREE.MeshBasicMaterial({ color: debugObject.color })
+const material = new THREE.MeshBasicMaterial({ map: colorTexture })
 const mesh = new THREE.Mesh(geometry, material)
 scene.add(mesh)
 
@@ -56,34 +115,7 @@ window.addEventListener('resize', () =>
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 })
 
-//Plein écran
-// window.addEventListener('dblclick', () =>
-//     {
-//         const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
-    
-//         if(!fullscreenElement)
-//         {
-//             if(canvas.requestFullscreen)
-//             {
-//                 canvas.requestFullscreen()
-//             }
-//             else if(canvas.webkitRequestFullscreen)
-//             {
-//                 canvas.webkitRequestFullscreen()
-//             }
-//         }
-//         else
-//         {
-//             if(document.exitFullscreen)
-//             {
-//                 document.exitFullscreen()
-//             }
-//             else if(document.webkitExitFullscreen)
-//             {
-//                 document.webkitExitFullscreen()
-//             }
-//         }
-//     })
+
 /**
  * Camera
  */
@@ -98,22 +130,23 @@ scene.add(camera)
 const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 //GUI
-const cubeTweaks = gui.addFolder('Awesome cube')
-gui 
+gui.add(debugObject, "PleinEcran")
+const cubeTweaks = gui.addFolder('Cool Cube')
+cubeTweaks 
     .add(mesh.position, 'y')
     .min(- 3)
     .max(3)
     .step(0.01)
     .name('elevation')
-gui.add(material, "wireframe")
-gui
+cubeTweaks.add(material, "wireframe")
+cubeTweaks
     .addColor(debugObject, 'color')
     .onChange(() =>
     {
         material.color.set(debugObject.color)
     })
-gui.add(debugObject, 'spin')
-gui
+cubeTweaks.add(debugObject, 'spin')
+cubeTweaks
     .add(debugObject, 'subdivision')
     .min(1)
     .max(20)
@@ -126,6 +159,8 @@ gui
             debugObject.subdivision, debugObject.subdivision, debugObject.subdivision
         )
     })
+cubeTweaks.close()
+
 /**
  * Renderer
  */

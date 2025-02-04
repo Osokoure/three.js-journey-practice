@@ -11,10 +11,6 @@ import { Wireframe } from 'three/examples/jsm/Addons.js'
 const gui = new GUI()
 const debugObject = {}
 debugObject.color = '#3a6ea6'
-debugObject.spin = () =>
-    {
-        gsap.to(mesh.rotation, { duration: 1, y: mesh.rotation.y + Math.PI * 2 })
-    }
 debugObject.PleinEcran =()=>
     {
                 const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
@@ -71,26 +67,56 @@ loadingManager.onStart = () =>
         console.log('Erreur de chargement')
     }
 const textureLoader = new THREE.TextureLoader(loadingManager)
-const colorTexture = textureLoader.load('/textures/door/color.jpg')
-colorTexture.colorSpace = THREE.SRGBColorSpace
-colorTexture.wrapS = THREE.RepeatWrapping
-colorTexture.wrapT = THREE.RepeatWrappin
-colorTexture.repeat.x = 3
-colorTexture.repeat.y = 3
-const alphaTexture = textureLoader.load('/textures/door/alpha.jpg')
-const heightTexture = textureLoader.load('/textures/door/height.jpg')
-const normalTexture = textureLoader.load('/textures/door/normal.jpg')
-const ambientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
-const metalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
-const roughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
+const doorColorTexture = textureLoader.load('/textures/door/color.jpg')
+doorColorTexture.colorSpace = THREE.SRGBColorSpace
+const doorAlphaTexture = textureLoader.load('/textures/door/alpha.jpg')
+const doorHeightTexture = textureLoader.load('/textures/door/height.jpg')
+const doorNormalTexture = textureLoader.load('/textures/door/normal.jpg')
+const doorAmbientOcclusionTexture = textureLoader.load('/textures/door/ambientOcclusion.jpg')
+const doorMetalnessTexture = textureLoader.load('/textures/door/metalness.jpg')
+const doorRoughnessTexture = textureLoader.load('/textures/door/roughness.jpg')
+const matcapTexture = textureLoader.load('/textures/matcaps/3.png')
+matcapTexture.colorSpace = THREE.SRGBColorSpace
+const gradientTexture = textureLoader.load('/textures/gradients/3.jpg')
 
 /**
- * Object
+ * Objects
  */
-const geometry = new THREE.BoxGeometry(1, 1, 1, 2, 2, 2)
-const material = new THREE.MeshBasicMaterial({ map: colorTexture })
-const mesh = new THREE.Mesh(geometry, material)
-scene.add(mesh)
+//MeshBasicMaterial
+//const material = new THREE.MeshBasicMaterial()
+// material.map=doorColorTexture
+// material.color=new THREE.Color("Red")
+// material.wireframe=true
+// material.transparent = true
+// material.opacity = 0.5
+// material.alphaMap=doorAlphaTexture
+//material.side = THREE.DoubleSide
+
+//MeshNormalMaterial
+// const material = new THREE.MeshNormalMaterial()
+//material.flatShading = true
+
+// MeshMatcapMaterial
+const material = new THREE.MeshMatcapMaterial()
+material.matcap = matcapTexture
+
+
+const sphereGeo = new THREE.SphereGeometry()
+
+const sphere = new THREE.Mesh(sphereGeo, material)
+scene.add(sphere)
+sphere.position.set(-3,0,0)
+
+const planeGeo = new THREE.PlaneGeometry()
+const plane = new THREE.Mesh(planeGeo, material)
+scene.add(plane)
+
+const torusGeo = new THREE.TorusGeometry()
+const torus = new THREE.Mesh(torusGeo, material)
+scene.add(torus)
+torus.position.set(3,0,0)
+
+
 
 /**
  * Sizes
@@ -131,35 +157,18 @@ const controls = new OrbitControls(camera, canvas)
 controls.enableDamping = true
 //GUI
 gui.add(debugObject, "PleinEcran")
-const cubeTweaks = gui.addFolder('Cool Cube')
-cubeTweaks 
-    .add(mesh.position, 'y')
-    .min(- 3)
-    .max(3)
-    .step(0.01)
-    .name('elevation')
-cubeTweaks.add(material, "wireframe")
-cubeTweaks
+const geoTweaks = gui.addFolder('Cool Gui')
+
+geoTweaks.add(material, "wireframe")
+geoTweaks
     .addColor(debugObject, 'color')
     .onChange(() =>
     {
         material.color.set(debugObject.color)
     })
-cubeTweaks.add(debugObject, 'spin')
-cubeTweaks
-    .add(debugObject, 'subdivision')
-    .min(1)
-    .max(20)
-    .step(1)
-    .onFinishChange(() =>
-    {
-        mesh.geometry.dispose()
-        mesh.geometry = new THREE.BoxGeometry(
-            1, 1, 1,
-            debugObject.subdivision, debugObject.subdivision, debugObject.subdivision
-        )
-    })
-cubeTweaks.close()
+geoTweaks.add(debugObject, 'spin')
+
+geoTweaks.close()
 
 /**
  * Renderer
@@ -178,7 +187,14 @@ const clock = new THREE.Clock()
 const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
+    //update objects
+    sphere.rotation.y =0.1 * elapsedTime
+    plane.rotation.y =0.1 * elapsedTime
+    torus.rotation.y =0.1 * elapsedTime
 
+    sphere.rotation.x = -0.15 * elapsedTime
+    plane.rotation.x = -0.15 * elapsedTime
+    torus.rotation.x = -0.15 * elapsedTime
     // Update controls
     controls.update()
 

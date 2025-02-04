@@ -97,9 +97,14 @@ const gradientTexture = textureLoader.load('/textures/gradients/3.jpg')
 //material.flatShading = true
 
 // MeshMatcapMaterial
-const material = new THREE.MeshMatcapMaterial()
-material.matcap = matcapTexture
+// const material = new THREE.MeshMatcapMaterial()
+// material.matcap = matcapTexture
 
+// MeshDepthMaterial
+// const material = new THREE.MeshDepthMaterial()
+
+// MeshLambertMaterial
+const material = new THREE.MeshLambertMaterial()
 
 const sphereGeo = new THREE.SphereGeometry()
 
@@ -116,7 +121,9 @@ const torus = new THREE.Mesh(torusGeo, material)
 scene.add(torus)
 torus.position.set(3,0,0)
 
-
+//Lights
+const lumiereAmbiante = new THREE.AmbientLight(0xffffff, 1)
+scene.add(lumiereAmbiante)
 
 /**
  * Sizes
